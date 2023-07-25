@@ -1,7 +1,7 @@
-import { Component } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
-import { GetQuery } from '../apiImages';
+import  {getQuery}  from '../apiImages';
 import { Loader } from '../Loader/Loader';
 import { Button } from '../Button/Button';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
@@ -16,77 +16,80 @@ const Status = {
   PENDING: 'pending',
   RESOLVED: 'resolved',
 };
-export class ImageGallery extends Component {
-  state = {
-    images: [],
-    page: 1,
-    error: null,
-    status: Status.IDLE,
-    total: 1,
-    showModal: false,
-    largeImageURL: null,
-    tags: '',    
-  };
+export default function ImageGallery({ search }) {
+ 
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(1);
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState(Status.IDLE);
+  const [showModal, setShowModal] = useState(false);
+  const [largeImageURL, setLargeImageURL] = useState(null);
+  const [tags, setTags] = useState('');  
 
-  onPage = () => {
-    this.setState(({ page }) => ({ page: page + 1 }));
+  const onPage = () => {
+    setPage(prev => prev + 1 );
     
   };
 
-  largeModal = largeImageURL => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
-    this.setState({ largeImageURL: largeImageURL });
+  const largeModal = (largeImageURL, tags) => {
+    setShowModal(!showModal);
+    setLargeImageURL(largeImageURL);
+    setTags(tags);
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    const prevSearch = prevProps.search;
-    const nextSearch = this.props.search;
-    const prevPage = prevState.page;
-    const nextPage = this.state.page;
+   let oldSearch = useRef('');
+  
+  useEffect(() => {
+// if (prevSearch !== nextSearch) {this.setState({ page: 1, images: [] });}
 
-    if (prevSearch !== nextSearch) {this.setState({ page: 1, images: [] });}
+//     if ((prevSearch !== nextSearch && nextPage === 1)  || prevPage !== nextPage) {
+    
+          
+    if (search === '') { return; }   
 
-    if ((prevSearch !== nextSearch && nextPage === 1)  || prevPage !== nextPage) {
-      this.setState({ status: Status.PENDING });
+      setStatus(Status.PENDING);
 
-      GetQuery(nextSearch, this.state.page)
+      getQuery(search, page)
         .then(images => {
           if (images.hits.length === 0) {
-            this.setState({ status: Status.IDLE });
+            setStatus(Status.IDLE);
+            setImages([]);
             return Promise.reject(new Error());            
-          }
-          this.setState(prevState => ({
-            images: [...prevState.images, ...images.hits],
-            total: images.total,
-            status: Status.RESOLVED,
-            error: null,
-          }));
+          }         
+
+          setImages(prev => [...prev, ...images.hits]);          
+          setTotal(images.total);
+          setStatus(Status.RESOLVED);
+          setError(null);   
+          
+      if (oldSearch.current !== search && page !== 1) {
+       setPage(1);
+       setImages([]);
+     }
+
+           oldSearch.current = search;
+          
         })
-        .catch(() => toast.error('Нажаль ми не змогли знайти такі зображення'));
-    }
-  }
-
-  render() {
-    const { images, status, showModal, largeImageURL, tags } = this.state;
-
+        .catch(() => toast.error('Нажаль ми не змогли знайти такі зображення'));    
+  }, [search, page])
+  
       return (
         <>
           {status === 'idle' && (<Loading>Які зображення ви хочете знайти?</Loading>)}                 
-            (<Gallery>
-              <ImageGalleryItem images={images} largeModal={this.largeModal} />
-          </Gallery>) 
-        {status === 'pending' && (<Loader />)}   
-          {status === 'resolved' && this.state.total / 12 > this.state.page && (
-            <Button onPage={this.onPage}></Button>
+          <Gallery>
+              <ImageGalleryItem images={images} largeModal={largeModal} />
+          </Gallery>
+          {status === 'pending' && (<Loader />)}   
+          {status === 'resolved' && total / 12 > page && (
+            <Button onPage={onPage}></Button>
           )}          
         
           {showModal && (
-            <Modal closeModal={this.largeModal}>
+            <Modal closeModal={largeModal}>
               <ModalDiv>
                 <img src={largeImageURL} alt={tags} />
-                <CloseModal type="button" onClick={this.largeModal}>
+                <CloseModal type="button" onClick={largeModal}>
                   <BsXLg size="40" />
                 </CloseModal>
               </ModalDiv>
@@ -95,7 +98,7 @@ export class ImageGallery extends Component {
         </>
       );
   }
-}
+
 
 ImageGallery.protoTypes = {
   search: PropTypes.string.isRequired,

@@ -1,42 +1,39 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { BiSearchAlt2 } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Form, Input } from './Searchbar.styled';
 
-export class Searchbar extends Component {
-  state = {
-    search: '',
-  };
+export default function Searchbar({ query }) {
+  const [search, setSearch] = useState('');  
 
-  nameSeach = e => {
-    this.setState({ search: e.currentTarget.value.toLowerCase() });
+  const nameSeach = e => {
+    setSearch(e.currentTarget.value.toLowerCase());
     };
     
-  nameQuery = e => {
+  const nameQuery = e => {
     e.preventDefault();
-    if (this.state.search.trim() === '') { toast('Що шукати?');
+    if (search.trim() === '') { toast('Що шукати?');
     return;
   }
-      this.props.query(this.state.search);
-      this.setState({ search: '' });
+      query(search);
+      setSearch( '' );
     }
-  render() {
+  
     return (
-      <Form onSubmit={this.nameQuery}>
+      <Form onSubmit={nameQuery}>
         <Input
           type="text"
           name="search"
-          value={this.state.search}
-          onChange={this.nameSeach}
+          value={search}
+          onChange={nameSeach}
         />
         <button type="submit">
           <BiSearchAlt2 size="20" />
         </button>
       </Form>
-    );
-  }
+    );  
 }
 
 

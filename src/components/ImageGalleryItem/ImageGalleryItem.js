@@ -2,12 +2,14 @@ import { LiImage, ItemImage } from './ImageGalleryItem.styled';
 import PropTypes from 'prop-types';
 export const ImageGalleryItem = ({images, largeModal}) => {
     
-    return (
+  return (
+    
         <>
-      {images.map(item => (
-              <LiImage key={item.id} onClick={(e)=>{largeModal(item.largeImageURL, item.tags);}}>
-                <ItemImage src={item.webformatURL} alt={item.tags} />
-              </LiImage>
+        {images.map(item => (
+        
+          <LiImage key={item.id} onClick={()=>largeModal(item.largeImageURL, item.tags)}>
+              <ItemImage src={item.webformatURL} alt={item.tags} />
+          </LiImage>
       ))}        
     </>
     )

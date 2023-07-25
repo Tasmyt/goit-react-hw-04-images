@@ -1,27 +1,25 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import { ToastContainer,  } from 'react-toastify';
-import {Searchbar} from './Searchbar/Searchbar';
-import { ImageGallery } from './ImageGallery/ImageGallery';
+import Searchbar from './Searchbar/Searchbar';
+import  ImageGallery from './ImageGallery/ImageGallery';
 
-export class App extends Component {
-  state = {
-    images: [],
-    search: '',
-  };
+export default function App() {
+  // const [images, setImages] = useState([]);
+  const [search, setSearch] = useState('');  
 
-  formSubmit = search => {
-    this.setState({search});
+  const formSubmit = search => {
+    setSearch(search);
 }
-  render() {
+  
     return (
       <div>
-        <Searchbar query={this.formSubmit} />
+        <Searchbar query={formSubmit} />
         
-        <ImageGallery search={this.state.search} />
+        <ImageGallery search={search} />
          
         <ToastContainer  />
       </div>
     );
   };
-}
+
