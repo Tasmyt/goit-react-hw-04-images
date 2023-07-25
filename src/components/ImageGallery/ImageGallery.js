@@ -21,7 +21,7 @@ export default function ImageGallery({ search }) {
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const [status, setStatus] = useState(Status.IDLE);
   const [showModal, setShowModal] = useState(false);
   const [largeImageURL, setLargeImageURL] = useState(null);
@@ -50,7 +50,7 @@ export default function ImageGallery({ search }) {
         if (images.hits.length === 0) {
           setStatus(Status.IDLE);
           setImages([]);
-          setError(error);
+          // setError(error);
           return Promise.reject(new Error());
           
         }
@@ -58,7 +58,7 @@ export default function ImageGallery({ search }) {
         setImages(prev => [...prev, ...images.hits]);
         setTotal(images.total);
         setStatus(Status.RESOLVED);
-        setError(null);
+        // setError(null);
           
         if (oldSearch.current !== search && page !== 1) {
           setPage(1);
