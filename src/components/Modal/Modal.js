@@ -10,20 +10,16 @@ export function Modal ({closeModal, children, }) {
     window.addEventListener('keydown', keyDown);
     return() => { window.removeEventListener('keydown', keyDown);}
 },)
-
-
   const keyDown = e => {    
     if (e.code === 'Escape') {
       closeModal(); 
     }
   };
-
     const backdropClick = e => {
         if (e.currentTarget === e.target) {
             closeModal();
         }
     }
-
   return createPortal(
     <Overlay onClick={backdropClick}>
             <ModalDiv >
@@ -31,7 +27,6 @@ export function Modal ({closeModal, children, }) {
             </ModalDiv>
     </Overlay>, modalRoot);
 }
-
 
 Modal.protoTypes = {
   onClick: PropTypes.func,

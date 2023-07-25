@@ -2,8 +2,7 @@ import { LiImage, ItemImage } from './ImageGalleryItem.styled';
 import PropTypes from 'prop-types';
 export const ImageGalleryItem = ({images, largeModal}) => {
     
-  return (
-    
+  return (    
         <>
         {images.map(item => (
         

@@ -28,8 +28,7 @@ export default function ImageGallery({ search }) {
   const [tags, setTags] = useState('');  
 
   const onPage = () => {
-    setPage(prev => prev + 1 );
-    
+    setPage(prev => prev + 1 );    
   };
 
   const largeModal = (largeImageURL, tags) => {
@@ -41,37 +40,35 @@ export default function ImageGallery({ search }) {
    let oldSearch = useRef('');
   
   useEffect(() => {
-// if (prevSearch !== nextSearch) {this.setState({ page: 1, images: [] });}
 
-//     if ((prevSearch !== nextSearch && nextPage === 1)  || prevPage !== nextPage) {
-    
-          
     if (search === '') { return; }   
 
       setStatus(Status.PENDING);
 
-      getQuery(search, page)
-        .then(images => {
-          if (images.hits.length === 0) {
-            setStatus(Status.IDLE);
-            setImages([]);
-            return Promise.reject(new Error());            
-          }         
-
-          setImages(prev => [...prev, ...images.hits]);          
-          setTotal(images.total);
-          setStatus(Status.RESOLVED);
-          setError(null);   
+    getQuery(search, page)
+      .then(images => {
+        if (images.hits.length === 0) {
+          setStatus(Status.IDLE);
+          setImages([]);
+          setError(error);
+          return Promise.reject(new Error());
           
-      if (oldSearch.current !== search && page !== 1) {
-       setPage(1);
-       setImages([]);
-     }
+        }
 
-           oldSearch.current = search;
+        setImages(prev => [...prev, ...images.hits]);
+        setTotal(images.total);
+        setStatus(Status.RESOLVED);
+        setError(null);
           
-        })
-        .catch(() => toast.error('Нажаль ми не змогли знайти такі зображення'));    
+        if (oldSearch.current !== search && page !== 1) {
+          setPage(1);
+          setImages([]);
+        }
+
+        oldSearch.current = search;
+          
+      })
+      .catch(() =>  toast.error('Нажаль ми не змогли знайти такі зображення' ));    
   }, [search, page])
   
       return (
